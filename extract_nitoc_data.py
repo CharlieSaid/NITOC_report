@@ -28,17 +28,24 @@ for file in os.listdir(path_to_data):
 
             # For each tournament in the data
             for tournament in data:
-                if 'National Invitational Tournament of Champions' in tournament['name']:
+                if 'National Invitational Tournament' in tournament['name']:
                     print("NITOC found: ", tournament['name'])
                     dict = {'name': tournament['name'], 'url': tournament['url'], 'state': tournament['state'], 'date': tournament['date']}
                     
                     for event in tournament['events']:
-                        print("Event found: ", event['name'], "Population: ", event['population'])
 
                         if event['name'] not in event_list:
                             event_list.append(event['name'])
+                        # Drop the last 3 characters of the event name
+                        event_name = event['name'][:-5]
 
-                        dict.update({event['name']: event['population']})
+                        if event_name == 'Lincoln-Douglas Value Debate':
+                            event_name = 'Lincoln Douglas Value Debate'
+                        if event_name == 'Mars Hill Impromptu':
+                            event_name = 'Mars Hill'
+                        
+
+                        dict.update({event_name: event['population']})
 
                     nitoc_tournaments.append(dict)
 
@@ -58,6 +65,8 @@ nitoc_df = pd.DataFrame(nitoc_tournaments)
 nitoc_df['year'] = nitoc_df['date'].str.split('-').str[0]
 nitoc_df = nitoc_df.drop(columns=['date'])
 nitoc_df = nitoc_df.sort_values(by='year')
+
+print(len(nitoc_df))
 
 # Create a dataframe from the events
 
